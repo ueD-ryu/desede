@@ -1,0 +1,9 @@
+/**
+ * 
+ */
+/**
+ * @author ueda
+ *
+ */
+module desedeSample {
+}
