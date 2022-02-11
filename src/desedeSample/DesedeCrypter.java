@@ -1,7 +1,5 @@
 package desedeSample;
 
-
-
 import java.util.Base64;
 
 import javax.crypto.Cipher;
@@ -28,14 +26,19 @@ public class DesedeCrypter {
 		System.out.println("srcText: " + srcText);
 
 		DesedeCrypter crypter = new DesedeCrypter();
+		// 秘密鍵
+		SecretKeySpec secretKeySpec = new SecretKeySpec(SECRET_KEY, CRYPT_ALGORITHM);
+		// 初期化ベクトル
+		IvParameterSpec ivSpec = new IvParameterSpec(IV);
+
 
 		// 暗号化処理
-		byte[] encrypted = crypter.encrypt(srcText);
+		byte[] encrypted = crypter.encrypt(srcText, secretKeySpec, ivSpec);
 		System.out.println("3DES: " + new String(encrypted));
 
 		//BASE64でエンコード
 		String base64EncodedText = new String(Base64.getEncoder().encode(encrypted));
-		System.out.println("BASE64: " + base64EncodedText);
+		System.out.println("BASE64エンコード: " + base64EncodedText);
 
 
 		// 復号化処理
@@ -43,8 +46,8 @@ public class DesedeCrypter {
 		String base64DecodedText = new String(Base64.getDecoder().decode(base64EncodedText));
 		System.out.println("3DES: " + base64DecodedText);
 
-		byte[] decrypted = crypter.decrypt(Base64.getDecoder().decode(base64EncodedText));
-		System.out.println("srcText: " + new String(decrypted));
+		byte[] decrypted = crypter.decrypt(Base64.getDecoder().decode(base64EncodedText), secretKeySpec, ivSpec);
+		System.out.println("srcText復号化: " + new String(decrypted));
 
 	}
 
@@ -55,16 +58,8 @@ public class DesedeCrypter {
 	 * @return
 	 * @throws Exception
 	 */
-	public byte[] encrypt(String value) throws Exception {
+	public byte[] encrypt(String value, SecretKeySpec secretKeySpec, IvParameterSpec ivSpec) throws Exception {
 		try {
-			// 秘密鍵
-			byte[] secretKey = SECRET_KEY;
-			SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey, CRYPT_ALGORITHM);
-
-			// 初期化ベクトル
-			byte[] iv = IV;
-			IvParameterSpec ivSpec = new IvParameterSpec(iv);
-
 			Cipher cipher = Cipher.getInstance(PADDING);
 			cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, ivSpec);
 
@@ -84,17 +79,9 @@ public class DesedeCrypter {
 	 * @return
 	 * @throws Exception
 	 */
-	public byte[] decrypt(byte[] value) throws Exception {
+	public byte[] decrypt(byte[] value, SecretKeySpec secretKeySpec, IvParameterSpec ivSpec) throws Exception {
 
 		try {
-			// 秘密鍵
-			byte[] secretKey = SECRET_KEY;
-		  SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey, CRYPT_ALGORITHM);
-
-			// 初期化ベクトル
-			byte[] iv = IV;
-		  IvParameterSpec ivSpec = new IvParameterSpec(iv);
-
 			Cipher cipher = Cipher.getInstance(PADDING);
 			cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, ivSpec);
 
