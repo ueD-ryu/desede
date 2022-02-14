@@ -1,5 +1,6 @@
 package desedeSample;
 
+import java.math.BigDecimal;
 import java.util.Base64;
 
 import javax.crypto.Cipher;
@@ -22,8 +23,23 @@ public class DesedeCrypter {
 	public static void main(String[] args) throws Exception {
 
 		// 8バイトブロックに対し半角スペースで補完
-		String srcText = "DesedeTest      ";
-		System.out.println("srcText: " + srcText);
+		String srcText = "あいうえおかきくけこ";
+		String compValue = srcText;
+		BigDecimal byteLength = BigDecimal.valueOf(srcText.getBytes().length);
+		System.out.println("byteLength: " + byteLength.intValue());
+		BigDecimal byteBlock = BigDecimal.valueOf(8);
+		// valueを8で割った余りを求める
+		BigDecimal rem = byteLength.remainder(byteBlock);
+		System.out.println("rem: " + rem.intValue());
+		if (rem.intValue() != 0) {
+			// 8バイトブロックでない場合、半角スペースで補完
+			for (int i = 0; i < 8 - rem.intValue(); i++) {
+				compValue += " ";
+			}
+		}
+
+		System.out.println("compValue: " + compValue);
+		System.out.println("compValueLength: " + compValue.getBytes().length);
 
 		DesedeCrypter crypter = new DesedeCrypter();
 		// 秘密鍵
@@ -33,7 +49,7 @@ public class DesedeCrypter {
 
 
 		// 暗号化処理
-		byte[] encrypted = crypter.encrypt(srcText, secretKeySpec, ivSpec);
+		byte[] encrypted = crypter.encrypt(compValue, secretKeySpec, ivSpec);
 		System.out.println("3DES: " + new String(encrypted));
 
 		//BASE64でエンコード
